@@ -1,0 +1,94 @@
+import tkinter as tk
+import random
+import time
+
+class TypingSpeedApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Typing Speed Calculator")
+        self.root.geometry("600x400")
+        self.root.configure(bg="#f7f7f7")
+
+        self.sentences = [
+            "The quick brown fox jumps over the lazy dog",
+            "Programming is fun and challenging",
+            "Python is a powerful programming language",
+            "Practice makes perfect",
+            "Learning new things every day",
+            "Typing speed can be improved with regular practice",
+            "Accuracy is just as important as speed",
+            "Consistent practice yields better results",
+            "The rain in Spain stays mainly in the plain",
+            "She sells seashells by the seashore",
+            "How much wood would a woodchuck chuck if a woodchuck could chuck wood",
+            "A journey of a thousand miles begins with a single step",
+            "To be or not to be, that is the question",
+            "All work and no play makes Jack a dull boy",
+            "Curiosity killed the cat, but satisfaction brought it back",
+            "Jack of all trades, master of none",
+            "Better late than never",
+            "Actions speak louder than words",
+            "A picture is worth a thousand words",
+            "The pen is mightier than the sword"
+        ]
+
+        self.current_sentence = tk.StringVar()
+        self.current_sentence.set(random.choice(self.sentences))
+
+        self.label_title = tk.Label(root, text="Typing Speed Calculator", font=("Verdana", 18, "bold"), bg="#f7f7f7")
+        self.label_title.pack(pady=20)
+
+        self.label_sentence = tk.Label(root, textvariable=self.current_sentence, font=("Verdana", 14), bg="#e8e8e8", wraplength=500, padx=10, pady=10, borderwidth=2, relief="groove")
+        self.label_sentence.pack(pady=10)
+
+        self.entry_text = tk.Entry(root, font=("Verdana", 12), width=50, borderwidth=2, relief="groove")
+        self.entry_text.pack(pady=10)
+
+        self.start_button = tk.Button(root, text="Start", command=self.start_typing, font=("Verdana", 12), bg="#4CAF50", fg="white", padx=10, pady=5)
+        self.start_button.pack(pady=5)
+
+        self.result_label = tk.Label(root, text="", font=("Verdana", 12), bg="#f7f7f7")
+        self.result_label.pack(pady=5)
+
+    def start_typing(self):
+        self.start_time = time.time()
+        self.entry_text.focus_set()
+        self.start_button.config(state="disabled")
+        self.entry_text.bind("<Return>", self.calculate_speed)
+
+    def calculate_speed(self, event):
+        typed_text = self.entry_text.get()
+        end_time = time.time()
+        time_taken = end_time - self.start_time
+
+        wpm = self.calculate_wpm(typed_text, time_taken)
+        accuracy = self.calculate_accuracy(typed_text, self.current_sentence.get())
+
+        result_text = f"Your typing speed: {wpm:.2f} words per minute\nAccuracy: {accuracy:.2f}%"
+        self.result_label.config(text=result_text)
+
+        self.start_button.config(state="normal")
+        self.entry_text.delete(0, tk.END)
+        self.current_sentence.set(random.choice(self.sentences))
+
+    def calculate_wpm(self, text, time_taken):
+        words = text.split()
+        num_words = len(words)
+        time_minutes = time_taken / 60
+        wpm = num_words / time_minutes
+        return wpm
+
+    def calculate_accuracy(self, typed_text, original_text):
+        typed_words = typed_text.split()
+        original_words = original_text.split()
+        common_words = sum(t == o for t, o in zip(typed_words, original_words))
+        accuracy = (common_words / len(original_words)) * 100
+        return accuracy
+
+def main():
+    root = tk.Tk()
+    app = TypingSpeedApp(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
